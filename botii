@@ -20,6 +20,12 @@ tformat="%F_%T"
 trap botii_stop INT # CTRL-C Murder Everything
 trap 'kill 0' EXIT  # Kill everything unclean exit (should respawn)
 
+# Check if we got ii
+if ! hash ii ; then
+  echo "Error: Unable to find ii in \$PATH, is it installed?"
+  exit 1
+fi
+
 # Check we're running as correct user
 if [[ "$USER" != "$system_user" ]] ; then
   echo "Error: Running as user '${USER}', Expected user '${system_user}'"
