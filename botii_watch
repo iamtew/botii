@@ -29,7 +29,7 @@ inotifywait -q -q -e MODIFY "$chan_out"
 tail -n1 "$chan_out" | \
 while read -r date time nick msg ; do
   [[ "$nick" == '-!-' ]] && continue      # Ignore system message
-  nick="${nick:1:-1}"                     # Strip < and > from the nick
+  nick=$(echo $nick | tr -d '<>,')        # Strip < and > from the nick
   [[ "$nick" == "$botnick" ]] && continue # Ignore message from ourself
 
   [[ "$msg" == "${botnick}: ping" ]] && \
