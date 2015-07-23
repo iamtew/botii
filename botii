@@ -59,13 +59,19 @@ join_channels() {
   # Wait for the connection
   echo "$(date +"$tformat") Waiting for '$server' to be available"
   while ! test -p "${ircdir}/${server}/in" ; do echo -n '.' ; sleep 1 ; done
+  echo
 
   for channel in $channels ; do
+    serv_socket="${ircdir}/${server}/in"
+    chan_socket="${ircdir}/${server}/${channel}/in"
+
     echo "$(date +"$tformat") Joining channel: ${channel}"
-    echo "/JOIN ${channel}" > "${ircdir}/${server}/in"
+    echo "/JOIN ${channel}" > "$serv_socket"
 
     # Wait until the channel is available
-    while ! test -p "${ircdir}/${server}/${channel}/in" ; do echo -n '.' ; sleep 1 ; done
+    while ! test -p "$chan_socket" ; do echo -n '.' ; sleep 1 ; done
+    echo
+
     echo "$(date +"$tformat") Starting watcher: ${channel}"
     exec ${0%/*}/botii_watch "$ircdir" "$server" "$nickname" "$channel" &
   done
