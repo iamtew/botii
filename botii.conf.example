@@ -1,0 +1,18 @@
+#! /bin/bash
+
+# Nickname and fullname of bot
+nickname="botii"
+fullname="bot built on ii - https://github.com/iamtew/botii"
+
+# Server and port to connect to
+server="irc.freenode.net"
+port="6667"
+
+# Space separated list of channels to join
+channels="#botii"
+
+# System user and group to run the bot under
+system_user="botii"
+
+# Directory for ii to place its files
+ircdir="/tmp/botii"
