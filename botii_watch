@@ -8,7 +8,7 @@ botnick="$3"
 channel="$4"
 
 # Directory to look for commands
-cmddir="${HOME}/commands"
+cmddir="${0%/*}/commands"
 
 chan_in="${ircdir}/${server}/${channel}/in"
 chan_out="${ircdir}/${server}/${channel}/out"

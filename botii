@@ -1,7 +1,7 @@
 #! /bin/bash
 
 # If there's a config file we'll source it
-. ${0%/*}/botii.conf2 \
+. ${0%/*}/botii.conf \
   || echo "Info: No config file found, continuing with default settings!"
 
 # Default values, if not set in the config file these are used
