@@ -1,0 +1,52 @@
+#! /bin/bash
+
+[[ $# -lt 4 ]] && exit 1
+
+ircdir="$1"
+server="$2"
+botnick="$3"
+channel="$4"
+
+# Directory to look for commands
+cmddir="${HOME}/commands"
+
+chan_in="${ircdir}/${server}/${channel}/in"
+chan_out="${ircdir}/${server}/${channel}/out"
+
+# Slow down output so we don't cause a flood by misstake
+buffer_output() {
+  local row=0
+  while read data ; do
+    [[ $row -ge 1 ]] && sleep 1
+    row=$(( row + 1 ))
+    echo "${data}"
+  done
+}
+
+# Wait until the out-file is updated
+inotifywait -q -q -e MODIFY "$chan_out"
+
+tail -n1 "$chan_out" | \
+while read -r date time nick msg ; do
+  [[ "$nick" == '-!-' ]] && continue      # Ignore system message
+  nick="${nick:1:-1}"                     # Strip < and > from the nick
+  [[ "$nick" == "$botnick" ]] && continue # Ignore message from ourself
+
+  [[ "$msg" == "${botnick}: ping" ]] && \
+    echo "${nick}: pong!"
+
+  # Messages starting with . are handed off to our scripts in
+  if [[ "$msg" =~ ^. ]] ; then
+    # First word in $msg without the first character = command
+    cmd=(${msg:1})
+
+    # If there's a script with the same name, we'll execute it and send the
+    # output to the channel
+    [[ -x "${cmddir}/${cmd}" ]] && \
+      exec "${cmddir}/${cmd}" "$nick" "$msg" | fold -w 255 &
+  fi
+
+done | buffer_output > "$chan_in"
+
+# Start the watcher again!
+exec $0 "$ircdir" "$server" "$botnick" "$channel" &
